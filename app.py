@@ -6,6 +6,10 @@ import os
 app = Flask(__name__)
 CORS(app) # GitHub Pages থেকে রিকোয়েস্ট গ্রহণ করার জন্য
 
+@app.route('/')
+def home():
+    return "CSM Downloader API is Live and Working!"
+
 @app.route('/api/getlink', methods=['POST'])
 def get_link():
     data = request.json or {}
