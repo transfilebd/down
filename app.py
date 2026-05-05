@@ -4,11 +4,11 @@ import yt_dlp
 import os
 
 app = Flask(__name__)
-CORS(app) # GitHub Pages থেকে রিকোয়েস্ট গ্রহণ করার জন্য
+CORS(app)
 
 @app.route('/')
 def home():
-    return "CSM Downloader API is Live and Working!"
+    return "CSM Downloader API is Live and Secure!"
 
 @app.route('/api/getlink', methods=['POST'])
 def get_link():
@@ -19,7 +19,16 @@ def get_link():
         return jsonify({'error': 'URL is required'}), 400
 
     try:
-        ydl_opts = {}
+        # ইউটিউবের বট চেকিং এড়াতে প্লেয়ার ক্লায়েন্ট কনফিগারেশন
+        ydl_opts = {
+            'extractor_args': {
+                'youtube': {
+                    'player_client': ['web', 'android']
+                }
+            },
+            'noplaylist': True
+        }
+        
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
             
