@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSM Hacker Radar - Downloader</title>
+    <style>
+        :root {
+            --bg-color: #0a0b10;
+            --terminal-green: #00ff66;
+            --terminal-dim: #008833;
+            --accent-red: #ff0055;
+            --border-color: #1a1c29;
+            --text-color: #d1d5db;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .terminal-window {
+            width: 100%;
+            max-width: 550px;
+            background: #0d0e14;
+            border: 2px solid var(--terminal-dim);
+            border-radius: 8px;
+            box-shadow: 0 0 25px rgba(0, 255, 102, 0.15);
+            padding: 25px;
+        }
+
+        .terminal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .title-bar {
+            color: var(--terminal-green);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .red { background-color: var(--accent-red); }
+        .yellow { background-color: #ffd700; }
+        .green { background-color: var(--terminal-green); }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            color: var(--terminal-green);
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        input, select {
+            width: 100%;
+            background: #050508;
+            border: 1px solid var(--terminal-dim);
+            color: #ffffff;
+            padding: 12px;
+            border-radius: 4px;
+            outline: none;
+            font-size: 0.95rem;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--terminal-green);
+            box-shadow: 0 0 5px rgba(0, 255, 102, 0.4);
+        }
+
+        .btn {
+            width: 100%;
+            background-color: var(--terminal-dim);
+            color: #ffffff;
+            border: none;
+            padding: 14px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: var(--terminal-green);
+            color: #050508;
+            box-shadow: 0 0 15px rgba(0, 255, 102, 0.5);
+        }
+
+        .output-box {
+            margin-top: 20px;
+            background: #050508;
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 4px;
+            min-height: 80px;
+            font-size: 0.85rem;
+            color: var(--terminal-green);
+            word-break: break-all;
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #4b5563;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="terminal-window">
+        <div class="terminal-header">
+            <div class="title-bar">> CSM_All_Rounder_Downloader</div>
+            <div class="controls">
+                <div class="dot red"></div>
+                <div class="dot yellow"></div>
+                <div class="dot green"></div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="url">URL_ADDRESS:</label>
+            <input type="text" id="url" placeholder="Enter video link (YouTube, FB, Instagram, etc)..." required>
+        </div>
+
+        <div class="form-group">
+            <label for="media_type">SELECT_MODE:</label>
+            <select id="media_type">
+                <option value="1">Video [HD/Standard]</option>
+                <option value="2">Audio [M4A / WAV]</option>
+            </select>
+        </div>
+
+        <button class="btn" onclick="fetchDownloadLink()">Process Link</button>
+
+        <div class="output-box" id="output">
+            > Ready. Enter a URL and choose the mode to get started...
+        </div>
+        
+        <div class="footer">
+            System Status: Secure | Version 1.0
+        </div>
+    </div>
+
+    <script>
+        const RENDER_API_URL = "https://your-render-app-name.onrender.com"; // এখানে আপনার Render-এর লিংক বসান
+
+        async function fetchDownloadLink() {
+            const url = document.getElementById('url').value;
+            const outputDiv = document.getElementById('output');
+
+            if (!url) {
+                outputDiv.innerText = "> [!] Error: URL is required.";
+                return;
+            }
+
+            outputDiv.innerText = "> Connecting to server and fetching video data...";
+
+            try {
+                const response = await fetch(`${RENDER_API_URL}/api/getlink`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url: url })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    outputDiv.innerHTML = `> [✓] Title: ${data.title}<br>> Uploader: ${data.uploader}<br>> <a href="${data.direct_url}" target="_blank" style="color:#00ffcc; text-decoration:underline;">[ CLICK HERE TO DOWNLOAD ]</a>`;
+                } else {
+                    outputDiv.innerText = `> [✗] Error: ${data.error || 'Failed to process'}`;
+                }
+            } catch (error) {
+                outputDiv.innerText = "> [✗] Network or Server Error. Please check if Render is active.";
+            }
+        }
+    </script>
+</body>
+</html>
